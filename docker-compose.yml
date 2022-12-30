@@ -15,8 +15,8 @@ services:
     volumes:
       - /home/nas/wp_danika/wordpress:/var/www/html
   mariadb:
-    container_name: ${DBNAME}
-    image: ${DBNAME}:latest
+    container_name: mariadb
+    image: mariadb:latest
     restart: always
     environment:
       MYSQL_DATABASE: ${NAME}
@@ -62,3 +62,4 @@ services:
 #      - /home/nas/wp_danika/certbot/conf:/etc/letsencrypt
 #      - /home/nas/wp_danika/certbot/logs:/var/log/letsencrypt
 #      - /home/nas/wp_danika/certbot/data:/var/www/html
+# docker exec -u root -it 24ced2cce616 /var/lib/mysql
