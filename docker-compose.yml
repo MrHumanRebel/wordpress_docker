@@ -1,0 +1,64 @@
+version: "3.9"
+services:
+  wordpress:
+    container_name: wordpress
+    image: wordpress:php8.1-apache
+    restart: always
+    ports:
+      - 65530:80 #80
+      - 65531:443 #443
+    environment:
+      WORDPRESS_DB_HOST: ${DBNAME}
+      WORDPRESS_DB_USER: ${NAME}
+      WORDPRESS_DB_PASSWORD: ${PASSWD}
+      WORDPRESS_DB_NAME: ${NAME}
+    volumes:
+      - /home/nas/wp_danika/wordpress:/var/www/html
+  mariadb:
+    container_name: ${DBNAME}
+    image: ${DBNAME}:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${NAME}
+      MYSQL_USER: ${NAME}
+      MYSQL_PASSWORD: ${PASSWD}
+      MYSQL_RANDOM_ROOT_PASSWORD: '${PASSWD}'
+    volumes:
+      - /home/nas/wp_danika/db:/var/lib/mysql
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin:latest
+    restart: always
+    links:
+          - mariadb
+    expose:
+      - "40001"
+    ports:
+      - "40001:80"
+    environment:
+      - PMA_HOST=${DBNAME}
+      - PMA_PORT=3306
+      - PMA_USER=${NAME}
+      - PMA_PASSWORD=${PASSWD}
+      - PMA_ARBITRARY=1
+    volumes:
+      - /home/nas/wp_danika/phpmyadmin:/etc/phpmyadmin
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    restart: unless-stopped
+    ports:
+      - 65532:80 #80
+      - 65533:443 #443
+    volumes:
+      - /home/nas/wp_danika/nginx/conf:/etc/nginx/conf.d
+#      - /home/nas/wp_danika/certbot/conf:/etc/nginx/ssl
+#      - /home/nas/wp_danika/certbot/data:/var/www/html
+#  certbot:
+#    container_name: certbot
+#    image: certbot/certbot:latest
+#    command: certonly --webroot --webroot-path=/var/www/html --email szekelydani5g@gmail.com --agree-tos --no-eff-email -d domain.com -d www.domain.com
+#    volumes:
+#      - /home/nas/wp_danika/certbot/conf:/etc/letsencrypt
+#      - /home/nas/wp_danika/certbot/logs:/var/log/letsencrypt
+#      - /home/nas/wp_danika/certbot/data:/var/www/html
